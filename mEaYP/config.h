@@ -1,5 +1,6 @@
 #define FLOW_TAP_TERM 100
 #define CHORDAL_HOLD
+#define chordal_hold_layout
 #undef DEBOUNCE
 #define DEBOUNCE 5
 
