@@ -15,3 +15,7 @@
 #define TAPPING_TERM_PER_KEY
 #define RGB_MATRIX_STARTUP_SPD 60
 
+#undef VENDOR_ID
+#define VENDOR_ID 0x05AC
+#undef PRODUCT_ID
+#define PRODUCT_ID <pid>
