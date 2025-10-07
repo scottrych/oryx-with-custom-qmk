@@ -1,4 +1,5 @@
 #define FLOW_TAP_TERM 100
+#define TAPPING_TERM 250
 #define CHORDAL_HOLD
 #undef DEBOUNCE
 #define DEBOUNCE 5
