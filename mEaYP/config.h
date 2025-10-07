@@ -9,7 +9,7 @@
 #define AUTO_SHIFT_TIMEOUT 200
 #define NO_AUTO_SHIFT_TAB
 #define NO_AUTO_SHIFT_ALPHA
-#define SERIAL_NUMBER "mEaYP/7vwdlj"
+#define SERIAL_NUMBER "mEaYP/bvrmgx"
 #define LAYER_STATE_8BIT
 
 #define TAPPING_TERM_PER_KEY
