@@ -17,7 +17,7 @@ enum custom_keycodes {
 
 
 
-#define DUAL_FUNC_0 LT(12, KC_F12)
+#define DUAL_FUNC_0 LT(2, KC_F2)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
@@ -69,13 +69,11 @@ const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM = LAYOUT(
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_GRAVE:
-            return TAPPING_TERM -95;
+            return TAPPING_TERM -70;
         case KC_SCLN:
-            return TAPPING_TERM + 5;
+            return TAPPING_TERM + 30;
         case KC_SLASH:
-            return TAPPING_TERM + 5;
-        case RGUI(RCTL(KC_C)):
-            return TAPPING_TERM -25;
+            return TAPPING_TERM + 30;
         default:
             return TAPPING_TERM;
     }
