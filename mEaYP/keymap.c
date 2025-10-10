@@ -302,5 +302,5 @@ bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
 
 // Set responsive timeout for Achordion (much faster than default 1000ms)
 uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  return 225;  // 225ms - fast and responsive timeout
+  return 200;  // 200ms - fast and responsive timeout
 }
