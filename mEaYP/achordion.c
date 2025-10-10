@@ -3,6 +3,10 @@
 
 #include "achordion.h"
 
+#ifdef ACHORDION_TESTING
+#include "achordion_test.h"
+#endif
+
 // Internal state tracking
 static keyrecord_t tap_hold_record;
 static uint16_t tap_hold_keycode = KC_NO;
@@ -127,3 +131,14 @@ void housekeeping_task_achordion(void) {
     tap_hold_keycode = KC_NO;
   }
 }
+
+#ifdef ACHORDION_TESTING
+// Test helper function to reset state
+void reset_achordion_state_for_testing(void) {
+    achordion_state = STATE_RELEASED;
+    tap_hold_keycode = KC_NO;
+    hold_timer = 0;
+    pressed_another_key_before_release = false;
+    memset(&tap_hold_record, 0, sizeof(tap_hold_record));
+}
+#endif

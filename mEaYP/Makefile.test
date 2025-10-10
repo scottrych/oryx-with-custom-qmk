@@ -1,0 +1,103 @@
+# Makefile.test — Build and run Achordion unit tests
+# Usage: make -f Makefile.test test
+
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -g -DACHORDION_TESTING
+INCLUDES = -I. -I../../qmk_firmware/quantum -I../../qmk_firmware/platforms/chibios/common
+TARGET = test_achordion
+SOURCES = test_achordion.c achordion.c
+OBJECTS = $(SOURCES:.c=.o)
+
+# QMK-compatible defines for compilation
+DEFINES = -DQK_MOD_TAP=0x4000 \
+          -DQK_LAYER_TAP=0x4800 \
+          -DIS_QK_MOD_TAP\(kc\)=\(\(\(kc\)\ \&\ 0xFF00\)\ ==\ 0x4000\) \
+          -DIS_QK_LAYER_TAP\(kc\)=\(\(\(kc\)\ \&\ 0xFF00\)\ ==\ 0x4800\) \
+          -DIS_KEYEVENT\(event\)=true \
+          -DMATRIX_ROWS=12 \
+          -DMATRIX_COLS=7 \
+          -DSPLIT_KEYBOARD
+
+# Mock QMK constants and macros
+MOCK_DEFINES = -DKC_NO=0 \
+               -DKC_A=4 \
+               -DKC_S=22 \
+               -DKC_J=13 \
+               -DKC_TAB=43 \
+               -DMOD_LCTL=0x01 \
+               -DMOD_LALT=0x02 \
+               -DMOD_LGUI=0x04 \
+               -DMOD_LSFT=0x08 \
+               -DMT\(mod,kc\)=\(0x4000\ \|\ \(\(mod\)\ \&\ 0x1F\)\ \<<\ 8\ \|\ \(kc\)\ \&\ 0xFF\) \
+               -DLT\(layer,kc\)=\(0x4800\ \|\ \(\(layer\)\ \&\ 0x1F\)\ \<<\ 8\ \|\ \(kc\)\ \&\ 0xFF\)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS) quantum_mock.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEFINES) $(MOCK_DEFINES) -c $< -o $@
+
+quantum_mock.o: quantum_mock.c
+	$(CC) $(CFLAGS) $(DEFINES) $(MOCK_DEFINES) -c $< -o $@
+
+quantum_mock.c:
+	@echo "Creating quantum_mock.c..."
+	@echo '#include <stdint.h>' > quantum_mock.c
+	@echo '#include <stdbool.h>' >> quantum_mock.c
+	@echo '#include <string.h>' >> quantum_mock.c
+	@echo '#include <stdio.h>' >> quantum_mock.c
+	@echo '' >> quantum_mock.c
+	@echo '// Mock QMK types and structures' >> quantum_mock.c
+	@echo 'typedef struct {' >> quantum_mock.c
+	@echo '    uint8_t col;' >> quantum_mock.c
+	@echo '    uint8_t row;' >> quantum_mock.c
+	@echo '} keypos_t;' >> quantum_mock.c
+	@echo '' >> quantum_mock.c
+	@echo 'typedef struct {' >> quantum_mock.c
+	@echo '    keypos_t key;' >> quantum_mock.c
+	@echo '    bool pressed;' >> quantum_mock.c
+	@echo '    uint16_t time;' >> quantum_mock.c
+	@echo '} keyevent_t;' >> quantum_mock.c
+	@echo '' >> quantum_mock.c
+	@echo 'typedef struct {' >> quantum_mock.c
+	@echo '    uint8_t count;' >> quantum_mock.c
+	@echo '    bool interrupted;' >> quantum_mock.c
+	@echo '} tap_t;' >> quantum_mock.c
+	@echo '' >> quantum_mock.c
+	@echo 'typedef struct {' >> quantum_mock.c
+	@echo '    keyevent_t event;' >> quantum_mock.c
+	@echo '    tap_t tap;' >> quantum_mock.c
+	@echo '} keyrecord_t;' >> quantum_mock.c
+	@echo '' >> quantum_mock.c
+	@echo '// Mock functions' >> quantum_mock.c
+	@echo 'void memset(void* ptr, int value, size_t num) {' >> quantum_mock.c
+	@echo '    char* p = (char*)ptr;' >> quantum_mock.c
+	@echo '    for (size_t i = 0; i < num; i++) {' >> quantum_mock.c
+	@echo '        p[i] = (char)value;' >> quantum_mock.c
+	@echo '    }' >> quantum_mock.c
+	@echo '}' >> quantum_mock.c
+
+test: $(TARGET)
+	@echo "Running Achordion unit tests..."
+	@echo "=================================="
+	./$(TARGET)
+
+clean:
+	rm -f $(OBJECTS) $(TARGET) quantum_mock.c quantum_mock.o
+
+.PHONY: all test clean
+
+# Help target
+help:
+	@echo "Achordion Test Makefile"
+	@echo "======================="
+	@echo ""
+	@echo "Targets:"
+	@echo "  all    - Build the test executable"
+	@echo "  test   - Build and run tests"
+	@echo "  clean  - Remove built files"
+	@echo "  help   - Show this help message"
+	@echo ""
+	@echo "Usage: make -f Makefile.test test"
