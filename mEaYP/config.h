@@ -4,9 +4,12 @@
 #undef DEBOUNCE
 #define DEBOUNCE 5
 
-#undef TAPPING_TERM
-#define TAPPING_TERM 225
+// Timing tuned for home-row mods
+#define TAPPING_TERM 230
+#define PERMISSIVE_HOLD     // (Oryx toggle you already use)
+#define QUICK_TAP_TERM 0    // don’t double-tap accidentally
 
+// If you use Retro Tapping elsewhere, leave it off for HRMs.
 #define PERMISSIVE_HOLD
 
 #define USB_SUSPEND_WAKEUP_DELAY 0
