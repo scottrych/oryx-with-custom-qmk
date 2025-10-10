@@ -8,4 +8,4 @@ SPACE_CADET_ENABLE = no
 CAPS_WORD_ENABLE = yes
 REPEAT_KEY_ENABLE = yes
 NKRO_ENABLE = no
-ACHORDION_ENABLE = yes      # (or)  SRC += achordion.c
+SRC += achordion.c
