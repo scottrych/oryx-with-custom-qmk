@@ -2,6 +2,7 @@
 
 #include QMK_KEYBOARD_H
 #include "version.h"
+#include "modules/getreuer/achordion/achordion.h"
 #include "achordion.h"  // ← added
 
 #define MOON_LED_LEVEL LED_LEVEL
@@ -163,7 +164,7 @@ bool rgb_matrix_indicators_user(void) {
 // ─────────────────────────────────────────────────────────────────────────────
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Achordion first
-  if (!process_achordion(keycode, record)) {
+  if (!process_record_achordion(keycode, record)) {
     return false;
   }
 
@@ -249,13 +250,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-void matrix_scan_user(void) {
-  achordion_task();
+void housekeeping_task_user(void) {
+  housekeeping_task_achordion();
 }
 
-// (Optional) Customize Achordion policy: prefer holds only if opposite hands.
-// If you like, uncomment this to tune behavior.
-// bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
-//                      uint16_t other_keycode, keyrecord_t* other_record) {
-//   return achordion_opposite_hands(tap_hold_record, other_record);
-// }
+// Customize Achordion policy: prefer holds only if opposite hands.
+bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
+                     uint16_t other_keycode, keyrecord_t* other_record) {
+  return achordion_opposite_hands(tap_hold_record, other_record);
+}
