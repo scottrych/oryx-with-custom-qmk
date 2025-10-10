@@ -2,8 +2,7 @@
 
 #include QMK_KEYBOARD_H
 #include "version.h"
-#include "modules/getreuer/achordion/achordion.h"
-#include "achordion.h"  // ← added
+#include "achordion.h"
 
 #define MOON_LED_LEVEL LED_LEVEL
 #ifndef ZSA_SAFE_RANGE
