@@ -7,7 +7,7 @@
 #ifndef PERMISSIVE_HOLD
 #define PERMISSIVE_HOLD     // (Oryx toggle you already use)
 #endif
-#define QUICK_TAP_TERM 0    // don’t double-tap accidentally
+#define QUICK_TAP_TERM 120    // Allow key repeat but prevent accidental double-taps
 
 // If you use Retro Tapping elsewhere, leave it off for HRMs.
 
