@@ -12,10 +12,9 @@
 // If you use Retro Tapping elsewhere, leave it off for HRMs.
 
 #define USB_SUSPEND_WAKEUP_DELAY 0
-#define AUTO_SHIFT_TIMEOUT 200
 #define NO_AUTO_SHIFT_TAB
 #define NO_AUTO_SHIFT_ALPHA
-#define SERIAL_NUMBER "mEaYP/x9LQY0"
+#define SERIAL_NUMBER "mEaYP/B4wvyv"
 #define LAYER_STATE_8BIT
 
 #define TAPPING_TERM_PER_KEY
