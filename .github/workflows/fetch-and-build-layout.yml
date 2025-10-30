@@ -74,7 +74,13 @@ jobs:
         run: |
           git fetch origin main
           git checkout -B main origin/main
-          git merge -Xignore-all-space oryx
+          git merge -Xignore-all-space --no-commit oryx || true
+          # Accept Oryx changes for layout files
+          git checkout --theirs ${{ github.event.inputs.layout_id }}/config.h ${{ github.event.inputs.layout_id }}/keymap.c ${{ github.event.inputs.layout_id }}/keymap.json || true
+          # Keep our custom rules.mk with achordion
+          git checkout --ours ${{ github.event.inputs.layout_id }}/rules.mk || true
+          git add .
+          git commit -m "Merge oryx: accept layout changes, preserve achordion integration" || echo "No merge needed"
           git push
 
       - name: Update QMK firmware submodule to latest version (${{ steps.download-layout-source.outputs.firmware_version }})
