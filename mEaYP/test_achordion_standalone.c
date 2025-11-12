@@ -39,11 +39,21 @@ typedef struct {
 #define KC_S 22
 #define KC_J 13
 #define KC_TAB 43
+#define KC_Z 29
+#define KC_1 30
+#define KC_0 39
+#define KC_MINS 45
+#define KC_UNDS 46
+#define KC_BSPC 42
+#define KC_DEL 76
+#define KC_SPC 44
 
 #define MOD_LCTL 0x01
 #define MOD_LALT 0x02
 #define MOD_LGUI 0x04
 #define MOD_LSFT 0x08
+
+#define KC_LSFT 0xE1
 
 // Mock QMK macros
 #define QK_MOD_TAP 0x4000
@@ -104,6 +114,44 @@ void process_record(keyrecord_t* record) {
         mock_tap_press_record = *record;
         mock_tap_press_captured = true;
     }
+}
+
+// Mock weak mods tracking for Caps Word
+static uint8_t mock_weak_mods = 0;
+
+void add_weak_mods(uint8_t mods) {
+    mock_weak_mods |= mods;
+}
+
+uint8_t get_weak_mods(void) {
+    return mock_weak_mods;
+}
+
+void clear_weak_mods(void) {
+    mock_weak_mods = 0;
+}
+
+#define MOD_BIT(kc) (1 << ((kc) & 0x0F))
+
+// Caps Word implementation (from keymap.c)
+bool caps_word_press_user(uint16_t keycode) {
+  switch (keycode) {
+    // Keycodes that continue Caps Word, with shift applied
+    case KC_A ... KC_Z:
+    case KC_MINS:  // For snake_case
+      add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key
+      return true;
+
+    // Keycodes that continue Caps Word, without shifting
+    case KC_1 ... KC_0:
+    case KC_BSPC:
+    case KC_DEL:
+    case KC_UNDS:  // Already shifted version of minus
+      return true;
+
+    default:
+      return false;  // Deactivate Caps Word
+  }
 }
 
 // Returns true if `pos` is on the left hand of the keyboard, false if right.
@@ -262,6 +310,7 @@ void reset_mocks(void) {
     mock_tap_press_captured = false;
     memset(&mock_processed_record, 0, sizeof(mock_processed_record));
     memset(&mock_tap_press_record, 0, sizeof(mock_tap_press_record));
+    clear_weak_mods();
 }
 
 // Reset achordion state for testing
@@ -475,6 +524,125 @@ void test_layer_tap_behavior(void) {
     TEST_ASSERT(achordion_state == STATE_RELEASED, "Should settle layer tap");
 }
 
+// Test Case 6: achordion_chord() allows holds only when keys are pressed on opposite hands
+void test_achordion_chord_opposite_hands_allows_hold(void) {
+    printf("\n=== Test Case 6: achordion_chord() - Opposite Hands Allow Hold ===\n");
+    
+    uint16_t tap_hold_kc = MT(MOD_LCTL, KC_A);
+    keyrecord_t tap_hold_rec = create_keyrecord(KC_A, true, 0, 2, 100);
+    
+    uint16_t other_kc = KC_J;
+    keyrecord_t other_rec = create_keyrecord(KC_J, true, 0, 8, 150);
+    
+    bool result = achordion_chord(tap_hold_kc, &tap_hold_rec, other_kc, &other_rec);
+    
+    TEST_ASSERT(result, "achordion_chord() should return true (allow hold) for opposite hands");
+}
+
+// Test Case 7: achordion_chord() forces taps when keys are pressed on same hand
+void test_achordion_chord_same_hand_forces_tap(void) {
+    printf("\n=== Test Case 7: achordion_chord() - Same Hand Forces Tap ===\n");
+    
+    uint16_t tap_hold_kc = MT(MOD_LCTL, KC_A);
+    keyrecord_t tap_hold_rec = create_keyrecord(KC_A, true, 0, 2, 100);
+    
+    uint16_t other_kc = KC_S;
+    keyrecord_t other_rec = create_keyrecord(KC_S, true, 1, 3, 150);
+    
+    bool result = achordion_chord(tap_hold_kc, &tap_hold_rec, other_kc, &other_rec);
+    
+    TEST_ASSERT(!result, "achordion_chord() should return false (force tap) for same hand");
+}
+
+// Test Case 8: caps_word_press_user() continues Caps Word and applies shift for alphabetical keys (A-Z)
+void test_caps_word_alphabetical_keys_with_shift(void) {
+    printf("\n=== Test Case 8: caps_word_press_user() - Alphabetical Keys (A-Z) ===\n");
+    
+    reset_mocks();
+    
+    // Test lowercase letter 'a'
+    bool result_a = caps_word_press_user(KC_A);
+    TEST_ASSERT(result_a, "caps_word_press_user(KC_A) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() != 0, "Should apply shift for KC_A");
+    
+    clear_weak_mods();
+    
+    // Test lowercase letter 'z'
+    bool result_z = caps_word_press_user(KC_Z);
+    TEST_ASSERT(result_z, "caps_word_press_user(KC_Z) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() != 0, "Should apply shift for KC_Z");
+    
+    clear_weak_mods();
+    
+    // Test lowercase letter 's'
+    bool result_s = caps_word_press_user(KC_S);
+    TEST_ASSERT(result_s, "caps_word_press_user(KC_S) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() != 0, "Should apply shift for KC_S");
+}
+
+// Test Case 9: caps_word_press_user() continues Caps Word without shift for numerical keys (0-9)
+void test_caps_word_numerical_keys_without_shift(void) {
+    printf("\n=== Test Case 9: caps_word_press_user() - Numerical Keys (0-9) ===\n");
+    
+    reset_mocks();
+    
+    // Test digit '1'
+    bool result_1 = caps_word_press_user(KC_1);
+    TEST_ASSERT(result_1, "caps_word_press_user(KC_1) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_1");
+    
+    // Test digit '0'
+    bool result_0 = caps_word_press_user(KC_0);
+    TEST_ASSERT(result_0, "caps_word_press_user(KC_0) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_0");
+}
+
+// Test Case 10: caps_word_press_user() continues Caps Word for special allowed keys
+void test_caps_word_special_allowed_keys(void) {
+    printf("\n=== Test Case 10: caps_word_press_user() - Special Allowed Keys ===\n");
+    
+    reset_mocks();
+    
+    // Test minus (for snake_case) - should apply shift
+    bool result_mins = caps_word_press_user(KC_MINS);
+    TEST_ASSERT(result_mins, "caps_word_press_user(KC_MINS) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() != 0, "Should apply shift for KC_MINS");
+    
+    clear_weak_mods();
+    
+    // Test underscore (already shifted) - should NOT apply shift
+    bool result_unds = caps_word_press_user(KC_UNDS);
+    TEST_ASSERT(result_unds, "caps_word_press_user(KC_UNDS) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_UNDS");
+    
+    // Test backspace - should NOT apply shift
+    bool result_bspc = caps_word_press_user(KC_BSPC);
+    TEST_ASSERT(result_bspc, "caps_word_press_user(KC_BSPC) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_BSPC");
+    
+    // Test delete - should NOT apply shift
+    bool result_del = caps_word_press_user(KC_DEL);
+    TEST_ASSERT(result_del, "caps_word_press_user(KC_DEL) should return true (continue Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_DEL");
+}
+
+// Test Case 11: caps_word_press_user() terminates Caps Word for non-specified keys
+void test_caps_word_terminates_for_other_keys(void) {
+    printf("\n=== Test Case 11: caps_word_press_user() - Terminates for Non-Specified Keys ===\n");
+    
+    reset_mocks();
+    
+    // Test space - should terminate
+    bool result_spc = caps_word_press_user(KC_SPC);
+    TEST_ASSERT(!result_spc, "caps_word_press_user(KC_SPC) should return false (terminate Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_SPC");
+    
+    // Test tab - should terminate
+    bool result_tab = caps_word_press_user(KC_TAB);
+    TEST_ASSERT(!result_tab, "caps_word_press_user(KC_TAB) should return false (terminate Caps Word)");
+    TEST_ASSERT(get_weak_mods() == 0, "Should NOT apply shift for KC_TAB");
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Test Runner
 // ─────────────────────────────────────────────────────────────────────────────
@@ -492,6 +660,12 @@ void run_all_tests(void) {
     test_chording_condition_tap();
     test_non_tap_hold_passthrough();
     test_layer_tap_behavior();
+    test_achordion_chord_opposite_hands_allows_hold();
+    test_achordion_chord_same_hand_forces_tap();
+    test_caps_word_alphabetical_keys_with_shift();
+    test_caps_word_numerical_keys_without_shift();
+    test_caps_word_special_allowed_keys();
+    test_caps_word_terminates_for_other_keys();
     
     // Print summary
     printf("\n=== Test Summary ===\n");
