@@ -1,7 +1,5 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
-#include "achordion.h"
-
 #define MOON_LED_LEVEL LED_LEVEL
 #ifndef ZSA_SAFE_RANGE
 #define ZSA_SAFE_RANGE SAFE_RANGE
@@ -27,28 +25,27 @@ enum tap_dance_codes {
   DANCE_3,
 };
 
-#define DUAL_FUNC_0 LT(9, KC_S)
-#define DUAL_FUNC_1 LT(9, KC_F1)
-#define DUAL_FUNC_2 LT(6, KC_F4)
-#define DUAL_FUNC_3 LT(13, KC_F2)
-#define DUAL_FUNC_4 LT(11, KC_O)
-#define DUAL_FUNC_5 LT(14, KC_H)
-#define DUAL_FUNC_6 LT(15, KC_U)
-#define DUAL_FUNC_7 LT(1, KC_4)
+#define DUAL_FUNC_0 LT(14, KC_F17)
+#define DUAL_FUNC_1 LT(10, KC_F18)
+#define DUAL_FUNC_2 LT(15, KC_F19)
+#define DUAL_FUNC_3 LT(5, KC_O)
+#define DUAL_FUNC_4 LT(5, KC_F14)
+#define DUAL_FUNC_5 LT(11, KC_F5)
+#define DUAL_FUNC_6 LT(7, KC_F23)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
-    KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DUAL_FUNC_1,    
-    KC_GRAVE,       KC_Q,           KC_W,           KC_L,           KC_D,           KC_P,                                           KC_K,           KC_M,           KC_U,           KC_Y,           DUAL_FUNC_2,    DUAL_FUNC_3,    
-    CW_TOGG,        MT(MOD_LCTL, KC_A),MT(MOD_LALT, KC_S),MT(MOD_LGUI, KC_R),MT(MOD_LSFT, KC_T),KC_G,                                           KC_F,           MT(MOD_RSFT, KC_N),MT(MOD_RGUI, KC_E),MT(MOD_RALT, KC_I),MT(MOD_RCTL, KC_O),DUAL_FUNC_4,    
-    KC_HYPR,        DUAL_FUNC_0,    TD(DANCE_0),    TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),                                    KC_J,           KC_B,           KC_H,           DUAL_FUNC_5,    DUAL_FUNC_6,    DUAL_FUNC_7,    
+    KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_MEH,         
+    KC_GRAVE,       KC_B,           KC_L,           KC_D,           KC_W,           TD(DANCE_0),                                    DUAL_FUNC_0,    KC_F,           KC_O,           KC_U,           KC_J,           DUAL_FUNC_1,    
+    CW_TOGG,        MT(MOD_LCTL, KC_N),MT(MOD_LALT, KC_R),MT(MOD_LGUI, KC_T),MT(MOD_LSFT, KC_S),KC_G,                                           KC_Y,           MT(MOD_RSFT, KC_H),MT(MOD_RGUI, KC_A),MT(MOD_RALT, KC_E),MT(MOD_RCTL, KC_I),DUAL_FUNC_2,    
+    KC_HYPR,        KC_Q,           TD(DANCE_1),    KC_M,           TD(DANCE_2),    TD(DANCE_3),                                    KC_K,           KC_P,           DUAL_FUNC_3,    DUAL_FUNC_4,    DUAL_FUNC_5,    DUAL_FUNC_6,    
                                                     LT(1, KC_TAB),  LT(2, KC_ENTER),                                LT(3, KC_SPACE),LT(4, KC_BSPC)
   ),
   [1] = LAYOUT_voyager(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_LBRC,                                        KC_RBRC,        KC_KP_PLUS,     KC_KP_MINUS,    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
-    KC_MEH,         KC_TRANSPARENT, KC_TRANSPARENT, KC_LCBR,        KC_RCBR,        KC_LPRN,                                        KC_RPRN,        KC_KP_ASTERISK, KC_KP_SLASH,    KC_KP_EQUAL,    KC_TRANSPARENT, KC_ENTER,       
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_LCBR,        KC_RCBR,        KC_LPRN,                                        KC_RPRN,        KC_KP_ASTERISK, KC_KP_SLASH,    KC_KP_EQUAL,    KC_TRANSPARENT, KC_ENTER,       
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, LSFT(KC_DELETE)
   ),
   [2] = LAYOUT_voyager(
@@ -108,7 +105,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_GRAVE:
             return TAPPING_TERM -70;
-        case DUAL_FUNC_2:
+        case DUAL_FUNC_1:
             return TAPPING_TERM + 15;
         default:
             return TAPPING_TERM;
@@ -129,9 +126,9 @@ void keyboard_post_init_user(void) {
 }
 
 const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {
-    [0] = { {20,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {0,245,245}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {0,245,245}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {0,245,245}, {0,245,245}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {20,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {20,255,255}, {20,255,255}, {20,255,255}, {0,245,245}, {0,245,245} },
+    [0] = { {20,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {0,245,245}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {0,245,245}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {0,245,245}, {0,245,245}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {101,255,255}, {20,184,184}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {169,255,255}, {20,255,255}, {169,255,255}, {169,255,255}, {20,255,255}, {20,255,255}, {20,255,255}, {20,255,255}, {0,245,245}, {0,245,245} },
 
-    [1] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {131,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {20,184,184}, {0,0,0}, {0,0,0}, {20,255,255}, {20,255,255}, {20,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {27,255,255}, {27,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {27,255,255}, {27,255,255}, {27,255,255}, {0,0,0}, {0,245,245}, {0,0,0}, {20,184,184} },
+    [1] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {131,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {20,255,255}, {20,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {27,255,255}, {27,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {20,255,255}, {27,255,255}, {27,255,255}, {27,255,255}, {0,0,0}, {0,245,245}, {0,0,0}, {20,184,184} },
 
     [2] = { {0,0,0}, {131,255,255}, {131,255,255}, {131,255,255}, {131,255,255}, {131,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {131,255,255}, {131,255,255}, {0,0,0}, {0,0,0}, {131,255,255}, {0,0,0}, {199,218,204}, {199,218,204}, {199,218,204}, {0,0,0}, {131,255,255}, {0,0,0}, {0,0,0}, {131,255,255}, {131,255,255}, {131,255,255}, {131,255,255}, {131,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {34,230,226}, {0,159,251}, {241,218,204}, {0,159,251}, {34,230,226}, {0,0,0}, {0,0,0}, {241,218,204}, {241,218,204}, {241,218,204}, {0,0,0}, {0,0,0}, {0,245,245}, {0,0,0} },
 
@@ -383,33 +380,7 @@ tap_dance_action_t tap_dance_actions[] = {
         [DANCE_3] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_3, dance_3_finished, dance_3_reset),
 };
 
-// Configure Caps Word to continue on home row mods and common keys
-bool caps_word_press_user(uint16_t keycode) {
-  switch (keycode) {
-    // Keycodes that continue Caps Word, with shift applied
-    case KC_A ... KC_Z:
-    case KC_MINS:  // For snake_case
-      add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key
-      return true;
-
-    // Keycodes that continue Caps Word, without shifting
-    case KC_1 ... KC_0:
-    case KC_BSPC:
-    case KC_DEL:
-    case KC_UNDS:  // Already shifted version of minus
-      return true;
-
-    default:
-      return false;  // Deactivate Caps Word
-  }
-}
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  // Achordion integration - process first
-  if (!process_record_achordion(keycode, record)) {
-    return false;
-  }
-
   switch (keycode) {
     case ST_MACRO_0:
     if (record->event.pressed) {
@@ -450,34 +421,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case DUAL_FUNC_0:
       if (record->tap.count > 0) {
         if (record->event.pressed) {
-          register_code16(KC_BSLS);
+          register_code16(KC_QUOTE);
         } else {
-          unregister_code16(KC_BSLS);
+          unregister_code16(KC_QUOTE);
         }
       } else {
         if (record->event.pressed) {
-          register_code16(KC_PIPE);
+          register_code16(KC_DQUO);
         } else {
-          unregister_code16(KC_PIPE);
+          unregister_code16(KC_DQUO);
         }  
       }  
       return false;
     case DUAL_FUNC_1:
-      if (record->tap.count > 0) {
-        if (record->event.pressed) {
-          register_code16(KC_EQUAL);
-        } else {
-          unregister_code16(KC_EQUAL);
-        }
-      } else {
-        if (record->event.pressed) {
-          register_code16(KC_PLUS);
-        } else {
-          unregister_code16(KC_PLUS);
-        }  
-      }  
-      return false;
-    case DUAL_FUNC_2:
       if (record->tap.count > 0) {
         if (record->event.pressed) {
           register_code16(KC_SCLN);
@@ -492,37 +448,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }  
       }  
       return false;
-    case DUAL_FUNC_3:
-      if (record->tap.count > 0) {
-        if (record->event.pressed) {
-          register_code16(KC_MINUS);
-        } else {
-          unregister_code16(KC_MINUS);
-        }
-      } else {
-        if (record->event.pressed) {
-          register_code16(KC_UNDS);
-        } else {
-          unregister_code16(KC_UNDS);
-        }  
-      }  
-      return false;
-    case DUAL_FUNC_4:
-      if (record->tap.count > 0) {
-        if (record->event.pressed) {
-          register_code16(KC_QUOTE);
-        } else {
-          unregister_code16(KC_QUOTE);
-        }
-      } else {
-        if (record->event.pressed) {
-          register_code16(KC_DQUO);
-        } else {
-          unregister_code16(KC_DQUO);
-        }  
-      }  
-      return false;
-    case DUAL_FUNC_5:
+    case DUAL_FUNC_2:
       if (record->tap.count > 0) {
         if (record->event.pressed) {
           register_code16(KC_COMMA);
@@ -537,7 +463,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }  
       }  
       return false;
-    case DUAL_FUNC_6:
+    case DUAL_FUNC_3:
       if (record->tap.count > 0) {
         if (record->event.pressed) {
           register_code16(KC_DOT);
@@ -552,7 +478,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }  
       }  
       return false;
-    case DUAL_FUNC_7:
+    case DUAL_FUNC_4:
+      if (record->tap.count > 0) {
+        if (record->event.pressed) {
+          register_code16(KC_MINUS);
+        } else {
+          unregister_code16(KC_MINUS);
+        }
+      } else {
+        if (record->event.pressed) {
+          register_code16(KC_UNDS);
+        } else {
+          unregister_code16(KC_UNDS);
+        }  
+      }  
+      return false;
+    case DUAL_FUNC_5:
       if (record->tap.count > 0) {
         if (record->event.pressed) {
           register_code16(KC_SLASH);
@@ -567,6 +508,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }  
       }  
       return false;
+    case DUAL_FUNC_6:
+      if (record->tap.count > 0) {
+        if (record->event.pressed) {
+          register_code16(KC_BSLS);
+        } else {
+          unregister_code16(KC_BSLS);
+        }
+      } else {
+        if (record->event.pressed) {
+          register_code16(KC_PIPE);
+        } else {
+          unregister_code16(KC_PIPE);
+        }  
+      }  
+      return false;
     case RGB_SLD:
       if (record->event.pressed) {
         rgblight_mode(1);
@@ -575,24 +531,3 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
-
-// ==== BEGIN: Achordion integration (custom, preserve across Oryx updates) ====
-
-void housekeeping_task_user(void) {
-  housekeeping_task_achordion();
-}
-
-// Customize Achordion policy: opposite hands for home row mods
-bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
-                     uint16_t other_keycode, keyrecord_t* other_record) {
-  // For home row mods, allow hold only with opposite hand
-  // This prevents accidental holds when typing fast on the same hand
-  return achordion_opposite_hands(tap_hold_record, other_record);
-}
-
-// Set responsive timeout for Achordion (much faster than default 1000ms)
-uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  return 200;  // 200ms - fast and responsive timeout
-}
-
-// ==== END: Achordion integration ====
