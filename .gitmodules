@@ -4,3 +4,6 @@
 [submodule "mEaYP/modules/getreuer"]
 	path = mEaYP/modules/getreuer
 	url = https://github.com/getreuer/qmk-modules.git
+[submodule "W7EL4/modules/getreuer"]
+	path = W7EL4/modules/getreuer
+	url = https://github.com/getreuer/qmk-modules.git
