@@ -383,6 +383,27 @@ tap_dance_action_t tap_dance_actions[] = {
         [DANCE_3] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_3, dance_3_finished, dance_3_reset),
 };
 
+// Configure Caps Word to continue on home row mods and common keys
+bool caps_word_press_user(uint16_t keycode) {
+  switch (keycode) {
+    // Keycodes that continue Caps Word, with shift applied
+    case KC_A ... KC_Z:
+    case KC_MINS:  // For snake_case
+      add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key
+      return true;
+
+    // Keycodes that continue Caps Word, without shifting
+    case KC_1 ... KC_0:
+    case KC_BSPC:
+    case KC_DEL:
+    case KC_UNDS:  // Already shifted version of minus
+      return true;
+
+    default:
+      return false;  // Deactivate Caps Word
+  }
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Achordion integration - process first
   if (!process_record_achordion(keycode, record)) {
@@ -561,50 +582,11 @@ void housekeeping_task_user(void) {
   housekeeping_task_achordion();
 }
 
-// Customize Achordion policy: smarter chord detection
+// Customize Achordion policy: opposite hands for home row mods
 bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
                      uint16_t other_keycode, keyrecord_t* other_record) {
-  // Check if the tap-hold key is a home row mod
-  bool is_home_row_mod = (tap_hold_keycode == MT(MOD_LCTL, KC_A) ||
-                         tap_hold_keycode == MT(MOD_LALT, KC_S) ||
-                         tap_hold_keycode == MT(MOD_LGUI, KC_R) ||
-                         tap_hold_keycode == MT(MOD_LSFT, KC_T) ||
-                         tap_hold_keycode == MT(MOD_RSFT, KC_N) ||
-                         tap_hold_keycode == MT(MOD_RGUI, KC_E) ||
-                         tap_hold_keycode == MT(MOD_RALT, KC_I) ||
-                         tap_hold_keycode == MT(MOD_RCTL, KC_O));
-
-  // If it's a home row mod, use more permissive rules
-  if (is_home_row_mod) {
-    // Always allow holds when pressed with opposite hand
-    if (achordion_opposite_hands(tap_hold_record, other_record)) {
-      return true;
-    }
-    
-    // Also allow holds when pressed with certain same-hand keys
-    // This enables modifier combinations like Cmd+Alt+[key]
-    uint16_t other_base = other_keycode;
-    
-    // Strip mod-tap wrapper to get the base keycode
-    if (IS_QK_MOD_TAP(other_keycode)) {
-      other_base = QK_MOD_TAP_GET_TAP_KEYCODE(other_keycode);
-    }
-    
-    // Allow holds when other key is:
-    // - Another home row mod (for Cmd+Alt, etc.)
-    // - A letter key that's commonly used with modifiers
-    // - Function keys, numbers, or special chars
-    if (IS_QK_MOD_TAP(other_keycode) ||  // Other home row mod
-        (other_base >= KC_A && other_base <= KC_Z) ||  // Letters
-        (other_base >= KC_1 && other_base <= KC_0) ||  // Numbers
-        (other_base >= KC_F1 && other_base <= KC_F24) ||  // Function keys
-        other_base == KC_SPACE || other_base == KC_ENTER || other_base == KC_TAB ||
-        other_base == KC_BSPC || other_base == KC_DEL) {
-      return true;
-    }
-  }
-  
-  // For non-home-row mods (layer taps, etc.), use opposite hands rule
+  // For home row mods, allow hold only with opposite hand
+  // This prevents accidental holds when typing fast on the same hand
   return achordion_opposite_hands(tap_hold_record, other_record);
 }
 

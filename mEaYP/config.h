@@ -3,6 +3,7 @@
 #undef DEBOUNCE
 #define DEBOUNCE 5
 
+#define TAPPING_TERM 200
 #define PERMISSIVE_HOLD
 
 #define USB_SUSPEND_WAKEUP_DELAY 0
