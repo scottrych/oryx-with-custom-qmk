@@ -1,7 +1,5 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
-#include "achordion.h"
-
 #define MOON_LED_LEVEL LED_LEVEL
 #ifndef ZSA_SAFE_RANGE
 #define ZSA_SAFE_RANGE SAFE_RANGE
@@ -20,28 +18,21 @@ enum custom_keycodes {
 
 
 
-enum tap_dance_codes {
-  DANCE_0,
-  DANCE_1,
-  DANCE_2,
-  DANCE_3,
-};
-
-#define DUAL_FUNC_0 LT(9, KC_S)
-#define DUAL_FUNC_1 LT(9, KC_F1)
-#define DUAL_FUNC_2 LT(6, KC_F4)
-#define DUAL_FUNC_3 LT(13, KC_F2)
-#define DUAL_FUNC_4 LT(11, KC_O)
-#define DUAL_FUNC_5 LT(14, KC_H)
-#define DUAL_FUNC_6 LT(15, KC_U)
-#define DUAL_FUNC_7 LT(1, KC_4)
+#define DUAL_FUNC_0 LT(5, KC_F1)
+#define DUAL_FUNC_1 LT(15, KC_E)
+#define DUAL_FUNC_2 LT(8, KC_N)
+#define DUAL_FUNC_3 LT(12, KC_P)
+#define DUAL_FUNC_4 LT(15, KC_0)
+#define DUAL_FUNC_5 LT(9, KC_F17)
+#define DUAL_FUNC_6 LT(2, KC_N)
+#define DUAL_FUNC_7 LT(4, KC_K)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
     KC_ESCAPE,      KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DUAL_FUNC_1,    
     KC_GRAVE,       KC_Q,           KC_W,           KC_L,           KC_D,           KC_P,                                           KC_K,           KC_M,           KC_U,           KC_Y,           DUAL_FUNC_2,    DUAL_FUNC_3,    
     CW_TOGG,        MT(MOD_LCTL, KC_A),MT(MOD_LALT, KC_S),MT(MOD_LGUI, KC_R),MT(MOD_LSFT, KC_T),KC_G,                                           KC_F,           MT(MOD_RSFT, KC_N),MT(MOD_RGUI, KC_E),MT(MOD_RALT, KC_I),MT(MOD_RCTL, KC_O),DUAL_FUNC_4,    
-    KC_HYPR,        DUAL_FUNC_0,    TD(DANCE_0),    TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),                                    KC_J,           KC_B,           KC_H,           DUAL_FUNC_5,    DUAL_FUNC_6,    DUAL_FUNC_7,    
+    KC_HYPR,        DUAL_FUNC_0,    KC_Z,           KC_X,           KC_C,           KC_V,                                           KC_J,           KC_B,           KC_H,           DUAL_FUNC_5,    DUAL_FUNC_6,    DUAL_FUNC_7,    
                                                     LT(1, KC_TAB),  LT(2, KC_ENTER),                                LT(3, KC_SPACE),LT(4, KC_BSPC)
   ),
   [1] = LAYOUT_voyager(
@@ -204,247 +195,9 @@ bool rgb_matrix_indicators_user(void) {
 
 
 
-typedef struct {
-    bool is_press_action;
-    uint8_t step;
-} tap;
 
-enum {
-    SINGLE_TAP = 1,
-    SINGLE_HOLD,
-    DOUBLE_TAP,
-    DOUBLE_HOLD,
-    DOUBLE_SINGLE_TAP,
-    MORE_TAPS
-};
-
-static tap dance_state[4];
-
-uint8_t dance_step(tap_dance_state_t *state);
-
-uint8_t dance_step(tap_dance_state_t *state) {
-    if (state->count == 1) {
-        if (state->interrupted || !state->pressed) return SINGLE_TAP;
-        else return SINGLE_HOLD;
-    } else if (state->count == 2) {
-        if (state->interrupted) return DOUBLE_SINGLE_TAP;
-        else if (state->pressed) return DOUBLE_HOLD;
-        else return DOUBLE_TAP;
-    }
-    return MORE_TAPS;
-}
-
-
-void on_dance_0(tap_dance_state_t *state, void *user_data);
-void dance_0_finished(tap_dance_state_t *state, void *user_data);
-void dance_0_reset(tap_dance_state_t *state, void *user_data);
-
-void on_dance_0(tap_dance_state_t *state, void *user_data) {
-    if(state->count == 3) {
-        tap_code16(KC_Z);
-        tap_code16(KC_Z);
-        tap_code16(KC_Z);
-    }
-    if(state->count > 3) {
-        tap_code16(KC_Z);
-    }
-}
-
-void dance_0_finished(tap_dance_state_t *state, void *user_data) {
-    dance_state[0].step = dance_step(state);
-    switch (dance_state[0].step) {
-        case SINGLE_TAP:
-            if (is_caps_word_on()) {
-                add_weak_mods(MOD_BIT(KC_LSFT));
-#ifdef __APPLE__
-                wait_ms(25);
-#endif
-            }
-            register_code16(KC_Z);
-            break;
-        case DOUBLE_TAP: register_code16(KC_Z); register_code16(KC_Z); break;
-        case DOUBLE_HOLD: register_code16(RGUI(KC_Z)); break;
-        case DOUBLE_SINGLE_TAP: tap_code16(KC_Z); register_code16(KC_Z);
-    }
-}
-
-void dance_0_reset(tap_dance_state_t *state, void *user_data) {
-    wait_ms(10);
-    switch (dance_state[0].step) {
-        case SINGLE_TAP: unregister_code16(KC_Z); break;
-        case DOUBLE_TAP: unregister_code16(KC_Z); break;
-        case DOUBLE_HOLD: unregister_code16(RGUI(KC_Z)); break;
-        case DOUBLE_SINGLE_TAP: unregister_code16(KC_Z); break;
-    }
-    dance_state[0].step = 0;
-}
-void on_dance_1(tap_dance_state_t *state, void *user_data);
-void dance_1_finished(tap_dance_state_t *state, void *user_data);
-void dance_1_reset(tap_dance_state_t *state, void *user_data);
-
-void on_dance_1(tap_dance_state_t *state, void *user_data) {
-    if(state->count == 3) {
-        tap_code16(KC_X);
-        tap_code16(KC_X);
-        tap_code16(KC_X);
-    }
-    if(state->count > 3) {
-        tap_code16(KC_X);
-    }
-}
-
-void dance_1_finished(tap_dance_state_t *state, void *user_data) {
-    dance_state[1].step = dance_step(state);
-    switch (dance_state[1].step) {
-        case SINGLE_TAP:
-            if (is_caps_word_on()) {
-                add_weak_mods(MOD_BIT(KC_LSFT));
-#ifdef __APPLE__
-                wait_ms(25);
-#endif
-            }
-            register_code16(KC_X);
-            break;
-        case DOUBLE_TAP: register_code16(KC_X); register_code16(KC_X); break;
-        case DOUBLE_HOLD: register_code16(RGUI(KC_X)); break;
-        case DOUBLE_SINGLE_TAP: tap_code16(KC_X); register_code16(KC_X);
-    }
-}
-
-void dance_1_reset(tap_dance_state_t *state, void *user_data) {
-    wait_ms(10);
-    switch (dance_state[1].step) {
-        case SINGLE_TAP: unregister_code16(KC_X); break;
-        case DOUBLE_TAP: unregister_code16(KC_X); break;
-        case DOUBLE_HOLD: unregister_code16(RGUI(KC_X)); break;
-        case DOUBLE_SINGLE_TAP: unregister_code16(KC_X); break;
-    }
-    dance_state[1].step = 0;
-}
-void on_dance_2(tap_dance_state_t *state, void *user_data);
-void dance_2_finished(tap_dance_state_t *state, void *user_data);
-void dance_2_reset(tap_dance_state_t *state, void *user_data);
-
-void on_dance_2(tap_dance_state_t *state, void *user_data) {
-    if(state->count == 3) {
-        tap_code16(KC_C);
-        tap_code16(KC_C);
-        tap_code16(KC_C);
-    }
-    if(state->count > 3) {
-        tap_code16(KC_C);
-    }
-}
-
-void dance_2_finished(tap_dance_state_t *state, void *user_data) {
-    dance_state[2].step = dance_step(state);
-    switch (dance_state[2].step) {
-        case SINGLE_TAP:
-            if (is_caps_word_on()) {
-                add_weak_mods(MOD_BIT(KC_LSFT));
-#ifdef __APPLE__
-                wait_ms(25);
-#endif
-            }
-            register_code16(KC_C);
-            break;
-        case DOUBLE_TAP: register_code16(KC_C); register_code16(KC_C); break;
-        case DOUBLE_HOLD: register_code16(RGUI(KC_C)); break;
-        case DOUBLE_SINGLE_TAP: tap_code16(KC_C); register_code16(KC_C);
-    }
-}
-
-void dance_2_reset(tap_dance_state_t *state, void *user_data) {
-    wait_ms(10);
-    switch (dance_state[2].step) {
-        case SINGLE_TAP: unregister_code16(KC_C); break;
-        case DOUBLE_TAP: unregister_code16(KC_C); break;
-        case DOUBLE_HOLD: unregister_code16(RGUI(KC_C)); break;
-        case DOUBLE_SINGLE_TAP: unregister_code16(KC_C); break;
-    }
-    dance_state[2].step = 0;
-}
-void on_dance_3(tap_dance_state_t *state, void *user_data);
-void dance_3_finished(tap_dance_state_t *state, void *user_data);
-void dance_3_reset(tap_dance_state_t *state, void *user_data);
-
-void on_dance_3(tap_dance_state_t *state, void *user_data) {
-    if(state->count == 3) {
-        tap_code16(KC_V);
-        tap_code16(KC_V);
-        tap_code16(KC_V);
-    }
-    if(state->count > 3) {
-        tap_code16(KC_V);
-    }
-}
-
-void dance_3_finished(tap_dance_state_t *state, void *user_data) {
-    dance_state[3].step = dance_step(state);
-    switch (dance_state[3].step) {
-        case SINGLE_TAP:
-            if (is_caps_word_on()) {
-                add_weak_mods(MOD_BIT(KC_LSFT));
-#ifdef __APPLE__
-                wait_ms(25);
-#endif
-            }
-            register_code16(KC_V);
-            break;
-        case DOUBLE_TAP: register_code16(KC_V); register_code16(KC_V); break;
-        case DOUBLE_HOLD: register_code16(RGUI(KC_V)); break;
-        case DOUBLE_SINGLE_TAP: tap_code16(KC_V); register_code16(KC_V);
-    }
-}
-
-void dance_3_reset(tap_dance_state_t *state, void *user_data) {
-    wait_ms(10);
-    switch (dance_state[3].step) {
-        case SINGLE_TAP: unregister_code16(KC_V); break;
-        case DOUBLE_TAP: unregister_code16(KC_V); break;
-        case DOUBLE_HOLD: unregister_code16(RGUI(KC_V)); break;
-        case DOUBLE_SINGLE_TAP: unregister_code16(KC_V); break;
-    }
-    dance_state[3].step = 0;
-}
-
-tap_dance_action_t tap_dance_actions[] = {
-        [DANCE_0] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_0, dance_0_finished, dance_0_reset),
-        [DANCE_1] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_1, dance_1_finished, dance_1_reset),
-        [DANCE_2] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_2, dance_2_finished, dance_2_reset),
-        [DANCE_3] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_3, dance_3_finished, dance_3_reset),
-};
-
-// Configure Caps Word to continue on home row mods and common keys
-bool caps_word_press_user(uint16_t keycode) {
-  switch (keycode) {
-    // Keycodes that continue Caps Word, with shift applied
-    case KC_A ... KC_Z:
-    case KC_MINS:  // For snake_case
-      add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key
-#ifdef __APPLE__
-      wait_ms(25); // macOS timing fix
-#endif
-      return true;
-
-    // Keycodes that continue Caps Word, without shifting
-    case KC_1 ... KC_0:
-    case KC_BSPC:
-    case KC_DEL:
-    case KC_UNDS:  // Already shifted version of minus
-      return true;
-
-    default:
-      return false;  // Deactivate Caps Word
-  }
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  // Achordion integration - process first
-  if (!process_record_achordion(keycode, record)) {
-    return false;
-  }
-
   switch (keycode) {
     case ST_MACRO_0:
     if (record->event.pressed) {
@@ -610,24 +363,3 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
-
-// ==== BEGIN: Achordion integration (custom, preserve across Oryx updates) ====
-
-void housekeeping_task_user(void) {
-  housekeeping_task_achordion();
-}
-
-// Customize Achordion policy: opposite hands for home row mods
-bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
-                     uint16_t other_keycode, keyrecord_t* other_record) {
-  // For home row mods, allow hold only with opposite hand
-  // This prevents accidental holds when typing fast on the same hand
-  return achordion_opposite_hands(tap_hold_record, other_record);
-}
-
-// Set responsive timeout for Achordion (much faster than default 1000ms)
-uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  return 200;  // 200ms - fast and responsive timeout
-}
-
-// ==== END: Achordion integration ====
