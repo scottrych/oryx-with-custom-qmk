@@ -3,13 +3,12 @@
 #undef DEBOUNCE
 #define DEBOUNCE 5
 
-#define TAPPING_TERM 200
 #define PERMISSIVE_HOLD
 
 #define USB_SUSPEND_WAKEUP_DELAY 0
 #define NO_AUTO_SHIFT_TAB
 #define NO_AUTO_SHIFT_ALPHA
-#define SERIAL_NUMBER "mEaYP/XbgNOg"
+#define SERIAL_NUMBER "mEaYP/OaoWwa"
 #define LAYER_STATE_8BIT
 #define COMBO_COUNT 2
 
