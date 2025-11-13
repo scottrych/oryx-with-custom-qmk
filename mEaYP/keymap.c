@@ -390,9 +390,6 @@ bool caps_word_press_user(uint16_t keycode) {
     case KC_A ... KC_Z:
     case KC_MINS:  // For snake_case
       add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key
-#ifdef __APPLE__
-      wait_ms(10); // macOS timing fix
-#endif
       return true;
 
     // Keycodes that continue Caps Word, without shifting
