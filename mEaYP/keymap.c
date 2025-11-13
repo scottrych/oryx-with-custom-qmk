@@ -253,7 +253,15 @@ void on_dance_0(tap_dance_state_t *state, void *user_data) {
 void dance_0_finished(tap_dance_state_t *state, void *user_data) {
     dance_state[0].step = dance_step(state);
     switch (dance_state[0].step) {
-        case SINGLE_TAP: register_code16(KC_Z); break;
+        case SINGLE_TAP:
+            if (is_caps_word_on()) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+#ifdef __APPLE__
+                wait_ms(25);
+#endif
+            }
+            register_code16(KC_Z);
+            break;
         case DOUBLE_TAP: register_code16(KC_Z); register_code16(KC_Z); break;
         case DOUBLE_HOLD: register_code16(RGUI(KC_Z)); break;
         case DOUBLE_SINGLE_TAP: tap_code16(KC_Z); register_code16(KC_Z);
@@ -288,7 +296,15 @@ void on_dance_1(tap_dance_state_t *state, void *user_data) {
 void dance_1_finished(tap_dance_state_t *state, void *user_data) {
     dance_state[1].step = dance_step(state);
     switch (dance_state[1].step) {
-        case SINGLE_TAP: register_code16(KC_X); break;
+        case SINGLE_TAP:
+            if (is_caps_word_on()) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+#ifdef __APPLE__
+                wait_ms(25);
+#endif
+            }
+            register_code16(KC_X);
+            break;
         case DOUBLE_TAP: register_code16(KC_X); register_code16(KC_X); break;
         case DOUBLE_HOLD: register_code16(RGUI(KC_X)); break;
         case DOUBLE_SINGLE_TAP: tap_code16(KC_X); register_code16(KC_X);
@@ -323,7 +339,15 @@ void on_dance_2(tap_dance_state_t *state, void *user_data) {
 void dance_2_finished(tap_dance_state_t *state, void *user_data) {
     dance_state[2].step = dance_step(state);
     switch (dance_state[2].step) {
-        case SINGLE_TAP: register_code16(KC_C); break;
+        case SINGLE_TAP:
+            if (is_caps_word_on()) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+#ifdef __APPLE__
+                wait_ms(25);
+#endif
+            }
+            register_code16(KC_C);
+            break;
         case DOUBLE_TAP: register_code16(KC_C); register_code16(KC_C); break;
         case DOUBLE_HOLD: register_code16(RGUI(KC_C)); break;
         case DOUBLE_SINGLE_TAP: tap_code16(KC_C); register_code16(KC_C);
@@ -358,7 +382,15 @@ void on_dance_3(tap_dance_state_t *state, void *user_data) {
 void dance_3_finished(tap_dance_state_t *state, void *user_data) {
     dance_state[3].step = dance_step(state);
     switch (dance_state[3].step) {
-        case SINGLE_TAP: register_code16(KC_V); break;
+        case SINGLE_TAP:
+            if (is_caps_word_on()) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+#ifdef __APPLE__
+                wait_ms(25);
+#endif
+            }
+            register_code16(KC_V);
+            break;
         case DOUBLE_TAP: register_code16(KC_V); register_code16(KC_V); break;
         case DOUBLE_HOLD: register_code16(RGUI(KC_V)); break;
         case DOUBLE_SINGLE_TAP: tap_code16(KC_V); register_code16(KC_V);
