@@ -77,13 +77,7 @@ jobs:
           git merge -Xignore-all-space --no-commit oryx || true
           # Accept Oryx changes for layout files
           git checkout --theirs ${{ github.event.inputs.layout_id }}/config.h ${{ github.event.inputs.layout_id }}/keymap.c ${{ github.event.inputs.layout_id }}/keymap.json || true
-          # Merge rules.mk: take Oryx version and add achordion
           git checkout --theirs ${{ github.event.inputs.layout_id }}/rules.mk || true
-          # Append achordion integration if not already present
-          if ! grep -q "achordion.c" ${{ github.event.inputs.layout_id }}/rules.mk; then
-            echo "NKRO_ENABLE = no" >> ${{ github.event.inputs.layout_id }}/rules.mk
-            echo "SRC += achordion.c" >> ${{ github.event.inputs.layout_id }}/rules.mk
-          fi
           git add .
           git commit -m "Merge oryx: accept layout changes, preserve achordion integration" || echo "No merge needed"
           git push
