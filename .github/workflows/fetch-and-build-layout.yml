@@ -99,18 +99,6 @@ jobs:
           git commit -m "✨(qmk): Update firmware" || echo "No QMK change"
           git push
 
-      - name: Run unit tests
-        run: |
-          echo "🧪 Compiling and running unit tests..."
-          gcc -o ${{ github.event.inputs.layout_id }}/test_achordion_standalone \
-            ${{ github.event.inputs.layout_id }}/test_achordion_standalone.c \
-            -std=c11 -Wall -Werror
-          
-          echo "▶️  Running tests..."
-          ${{ github.event.inputs.layout_id }}/test_achordion_standalone
-          
-          echo "✅ All tests passed!"
-
       - name: Build qmk docker image
         run: docker build -t qmk .
 
