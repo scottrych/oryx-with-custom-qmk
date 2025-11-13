@@ -8,7 +8,7 @@
 #define USB_SUSPEND_WAKEUP_DELAY 0
 #define NO_AUTO_SHIFT_TAB
 #define NO_AUTO_SHIFT_ALPHA
-#define SERIAL_NUMBER "mEaYP/XbgNOg"
+#define SERIAL_NUMBER "mEaYP/OaoWwa"
 #define LAYER_STATE_8BIT
 #define COMBO_COUNT 2
 
